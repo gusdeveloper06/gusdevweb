@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GusDev // Entity_Dossier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --neon-blue: #00f2ff; --neon-purple: #bc13fe; --glass: rgba(255, 255, 255, 0.02); }
+        
+        body {
+            font-family: 'Fira Code', monospace; background: #010409;
+            min-height: 100vh; color: #e2e8f0; margin: 0; overflow-x: hidden;
+        }
+
+        /* --- PRELOADER ANIMATION CSS --- */
+        #preloader {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+
+        .matrix-rain {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            color: var(--neon-blue); font-size: 10px; opacity: 0.15;
+            overflow: hidden; pointer-events: none; line-height: 1;
+        }
+
+        .terminal-loader { width: 320px; text-align: left; position: relative; z-index: 10; }
+        .terminal-text { color: var(--neon-blue); font-size: 12px; margin-bottom: 5px; text-shadow: 0 0 5px var(--neon-blue); }
+        .loading-bar-container { width: 100%; height: 4px; background: rgba(255,255,255,0.1); overflow: hidden; }
+        .loading-bar { width: 0%; height: 100%; background: var(--neon-purple); box-shadow: 0 0 15px var(--neon-purple); transition: width 0.2s; }
+
+        /* --- MAIN CONTENT STYLES (Oculto al inicio) --- */
+        #main-content { 
+            display: none; opacity: 0; transition: opacity 1s ease-in; 
+            padding: 40px; 
+            background-image: 
+                linear-gradient(var(--neon-blue) 0.1px, transparent 0.1px),
+                linear-gradient(90deg, var(--neon-blue) 0.1px, transparent 0.1px);
+            background-size: 50px 50px;
+        }
+
+        /* Scanlines CRT Effect */
+        body::before {
+            content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 100; background-size: 100% 3px, 2px 100%; pointer-events: none;
+        }
+
+        .hud-corner { position: absolute; width: 15px; height: 15px; border: 2px solid var(--neon-blue); transition: all 0.3s; }
+        .top-left { top: -2px; left: -2px; border-right: 0; border-bottom: 0; }
+        .bottom-right { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
+
+        .glass-panel {
+            background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(30px);
+            border: 1px solid rgba(0, 242, 255, 0.15);
+            position: relative;
+        }
+
+        .stat-progress { 
+            position: relative;
+            box-shadow: 0 0 15px var(--neon-blue);
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+        .glitch:hover { animation: glitch 0.3s infinite linear; text-shadow: 2px 0 var(--neon-purple), -2px 0 var(--neon-blue); }
+
+        /* Animación de Cascada para Empleos */
+        .job-node { opacity: 0; transform: translateY(20px); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .job-node.active-load { opacity: 1 !important; transform: translateY(0) !important; }
+        
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        .cursor-blink { animation: blink 1s infinite; }
+    </style>
+</head>
+<body class="max-w-7xl mx-auto w-full">
+
+    <div id="preloader">
+        <canvas id="matrix-canvas" class="matrix-rain"></canvas>
+        <div class="terminal-loader">
+            <div id="status-msg" class="terminal-text text-[10px] opacity-70 uppercase mb-4 tracking-widest">Initialising_Breach...</div>
+            <div class="terminal-text font-bold mb-2 uppercase tracking-[0.2em]">BYPASSING_SECURITY_FIREWALL</div>
+            <div class="loading-bar-container">
+                <div id="progress" class="loading-bar"></div>
+            </div>
+            <div class="mt-4 flex justify-between">
+                <span id="percent" class="text-[10px] text-white font-mono">0%</span>
+                <span class="text-[10px] text-slate-500 animate-pulse uppercase tracking-tighter">Encrypting_Bio_Data</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-content">
+        
+        <div class="flex justify-between text-[8px] font-black tracking-[0.8em] text-slate-700 mb-8 uppercase">
+            <span>GusDev_Kernel_Access: Granted</span>
+            <span class="animate-pulse">Memory_Usage: 44% // Temp: 31°C</span>
+        </div>
+
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-white/10 pb-12 mb-16 gap-6">
+            <div class="space-y-4">
+                <a href="index.html" class="text-[9px] font-black text-[#bc13fe] border border-[#bc13fe]/30 px-4 py-1 uppercase tracking-[0.5em] hover:bg-[#bc13fe] hover:text-black transition-all">
+                    << REGRESO_AL_INICIO
+                </a>
+                <h1 class="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-white glitch cursor-default">GusDev</h1>
+            </div>
+            <div class="text-right border-r-4 border-[#bc13fe] pr-6">
+                <p class="text-[11px] text-[#00f2ff] font-bold tracking-[0.4em] uppercase">Status: Architect_In_Leon</p>
+                <p class="text-[9px] text-slate-500 mt-2 font-mono tracking-widest uppercase">BUILD_DATE: 19_MAR_2026</p>
+            </div>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            
+            <div class="lg:col-span-4 space-y-8">
+                <div class="glass-panel p-10 overflow-hidden">
+                    <div class="hud-corner top-left"></div>
+                    <div class="hud-corner bottom-right"></div>
+                    
+                    <div class="relative w-40 h-40 mx-auto mb-10 border border-white/10 flex items-center justify-center group overflow-hidden bg-slate-900/50">
+                        <div class="absolute inset-2 border border-dashed border-[#00f2ff]/30 animate-[spin_20s_linear_infinite]"></div>
+                        <span class="text-6xl font-black italic text-white group-hover:scale-110 transition-transform">G</span>
+                    </div>
+
+                    <div class="space-y-6 font-bold uppercase italic text-[11px]">
+                        <div class="flex justify-between border-b border-white/5 pb-2">
+                            <span class="text-slate-600">Edad:</span> <span class="text-[#bc13fe]">24_años</span>
+                        </div>
+                        <div class="flex justify-between border-b border-white/5 pb-2">
+                            <span class="text-slate-600">Originario:</span> <span class="text-white">Leon, Gto. MX</span>
+                        </div>
+                        <div class="flex justify-between border-b border-white/5 pb-2">
+                            <span class="text-slate-600">Idiomas:</span> <span class="text-white">ESP_ENG_CH</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-8 space-y-6">
+                    <h4 class="text-[10px] font-black text-white tracking-[0.5em] uppercase mb-4">Skill_Sync_Ratio</h4>
+                    <div class="space-y-5">
+                        <div>
+                            <div class="flex justify-between text-[8px] mb-2 font-black tracking-widest"><span>FULLSTACK_FLOW</span><span>99%</span></div>
+                            <div class="h-1.5 bg-white/5"><div class="stat-progress h-full w-[99%]"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[8px] mb-2 font-black tracking-widest"><span>LINUX_KERNEL_OPS</span><span>92%</span></div>
+                            <div class="h-1.5 bg-white/5"><div class="stat-progress h-full w-[92%]" style="box-shadow: 0 0 15px #bc13fe; background: #bc13fe;"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 space-y-12">
+                
+                <section class="glass-panel p-10 bg-gradient-to-br from-[#0a0f1e] to-transparent border-l-4 border-[#00f2ff]">
+                    <h3 class="text-[#00f2ff] font-black text-xs tracking-[0.5em] uppercase mb-8 flex items-center gap-4">
+                        <span class="p-1 bg-[#00f2ff] rounded-sm"></span> // PERSONAL_LOG_01
+                    </h3>
+                    <p class="text-slate-300 leading-relaxed italic text-xl md:text-2xl font-light">
+                        "Soy un desarrollador Full Stack apasionado por el arte de convertir líneas de código en soluciones funcionales. Mi motor es la programación; amo el desafío de construir sistemas desde cero y optimizar procesos complejos bajo entornos Linux."
+                    </p>
+                </section>
+
+                <section class="space-y-6">
+                    <h3 class="text-[#bc13fe] font-black text-xs tracking-[0.5em] uppercase mb-6 flex items-center gap-4">
+                        <span class="p-1 bg-[#bc13fe] rounded-sm"></span> // ACTIVE_DEPLOYMENTS
+                    </h3>
+                    
+                    <div id="job-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        
+                        <div class="job-node p-6 glass-panel group opacity-0 translate-y-4 hover:-translate-y-2 transition-transform duration-300">
+                            <div class="hud-corner top-left group-hover:border-[#bc13fe]"></div>
+                            <div class="hud-corner bottom-right group-hover:border-[#bc13fe]"></div>
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="text-[8px] text-[#00f2ff] font-black block uppercase tracking-tighter opacity-70">Desarrollador</span>
+                                <span class="text-[7px] text-slate-700 font-mono">[Node: 0x1]</span>
+                            </div>
+                            <h4 class="text-xl font-black italic text-white group-hover:text-[#bc13fe] transition-colors uppercase tracking-tighter">LINKDEVS</h4>
+                        </div>
+
+                        <div class="job-node p-6 glass-panel group opacity-0 translate-y-4 hover:-translate-y-2 transition-transform duration-300 border-l-[#bc13fe] border-l-2">
+                            <div class="hud-corner top-left group-hover:border-[#00f2ff]"></div>
+                            <div class="hud-corner bottom-right border-[#00f2ff]"></div>
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="text-[8px] text-[#bc13fe] font-black block uppercase tracking-tighter opacity-70">Desarrollador</span>
+                                <span class="text-[7px] text-slate-700 font-mono">[Node: 0x2]</span>
+                            </div>
+                            <h4 class="text-lg font-black italic text-white group-hover:text-[#00f2ff] transition-colors uppercase tracking-tighter leading-tight">NOVA SOLUCIONES EN SINIESTROS</h4>
+                        </div>
+
+                        <div class="job-node p-6 glass-panel group opacity-0 translate-y-4 hover:-translate-y-2 transition-transform duration-300">
+                            <div class="hud-corner top-left group-hover:border-[#bc13fe]"></div>
+                            <div class="hud-corner bottom-right group-hover:border-[#bc13fe]"></div>
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="text-[8px] text-[#00f2ff] font-black block uppercase tracking-tighter opacity-70">Desarrollador</span>
+                                <span class="text-[7px] text-slate-700 font-mono">[Node: 0x1]</span>
+                            </div>
+                            <h4 class="text-xl font-black italic text-white group-hover:text-[#bc13fe] transition-colors uppercase tracking-tighter">JYV AJUSTADORES</h4>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer class="mt-20 flex justify-center pb-10 relative">
+            <div class="flex items-center gap-10">
+                <div class="w-20 h-[1px] bg-gradient-to-r from-transparent to-slate-800"></div>
+                <span class="text-[9px] text-slate-700 font-black tracking-[1em] uppercase">End_Of_Transmission</span>
+                <div class="w-20 h-[1px] bg-gradient-to-l from-transparent to-slate-800"></div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // --- SCRIPT 1: Lluvia Matrix del Preloader ---
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@&%";
+        const fontSize = 10;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#00f2ff"; // Cyan Neon
+            ctx.font = fontSize + "px monospace";
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 50);
+
+        // --- SCRIPT 2: Lógica de Carga y Revelación ---
+        let progress = 0;
+        const progressFill = document.getElementById('progress');
+        const percentText = document.getElementById('percent');
+        const statusMsg = document.getElementById('status-msg');
+        const messages = ["ACCESSING_PORT_80", "BYPASSING_SSH", "DECRYPTING_BIO", "ESTABLISHING_HANDSHAKE", "CONNECTED"];
+
+        const loadingInterval = setInterval(() => {
+            progress += Math.floor(Math.random() * 8) + 1; // Carga errática "perrona"
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(loadingInterval);
+                finishLoading();
+            }
+            progressFill.style.width = progress + '%';
+            percentText.innerText = progress + '%';
+            statusMsg.innerText = messages[Math.floor(progress / 21)] || "CONNECTED";
+        }, 150);
+
+        function finishLoading() {
+            setTimeout(() => {
+                // Ocultar Preloader
+                document.getElementById('preloader').style.display = 'none';
+                
+                // Mostrar Contenido
+                const main = document.getElementById('main-content');
+                main.style.display = 'block';
+                
+                // Pequeño delay para el fade-in
+                setTimeout(() => {
+                    main.style.opacity = '1';
+                    // Disparar animación secuencial de empleos
+                    animateJobs();
+                }, 50);
+            }, 600); // Espera medio segundo tras llegar al 100%
+        }
+
+        function animateJobs() {
+            const jobs = document.querySelectorAll('.job-node');
+            jobs.forEach((job, index) => {
+                setTimeout(() => {
+                    job.classList.remove('opacity-0', 'translate-y-4');
+                    job.classList.add('active-load');
+                    // Efecto de parpadeo de terminal al aparecer
+                    job.style.animation = 'glitch 0.2s 1';
+                }, index * 250); // Retraso entre cada empleo (250ms)
+            });
+        }
+
+        // Ajustar canvas si cambia el tamaño de ventana
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+
+</body>
+</html>

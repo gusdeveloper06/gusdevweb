@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GusDev // Portafolio Oficial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --neon-blue: #00f2ff; --neon-purple: #bc13fe; --glass: rgba(255, 255, 255, 0.03); }
+        
+        body {
+            font-family: 'Fira Code', monospace;
+            background: #020617;
+            background-image: 
+                radial-gradient(circle at 15% 25%, rgba(0, 242, 255, 0.1) 0%, transparent 45%),
+                radial-gradient(circle at 85% 75%, rgba(188, 19, 254, 0.1) 0%, transparent 45%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Scanlines CRT Effect */
+        body::before {
+            content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            z-index: 100; background-size: 100% 4px, 3px 100%; pointer-events: none;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(25px) saturate(160%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .lang-node {
+            border-left: 2px solid var(--neon-blue);
+            background: linear-gradient(90deg, rgba(0, 242, 255, 0.05) 0%, transparent 100%);
+            transition: all 0.3s ease;
+        }
+        .lang-node:hover {
+            border-left-color: var(--neon-purple);
+            background: linear-gradient(90deg, rgba(188, 19, 254, 0.1) 0%, transparent 100%);
+            transform: translateX(5px);
+        }
+
+        @keyframes pulse-neon { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+        .status-dot { animation: pulse-neon 2s infinite; }
+    </style>
+</head>
+<body class="p-6 md:p-12">
+
+    <header class="flex justify-between items-center z-50 mb-16">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-[#00f2ff] to-[#bc13fe] p-[1px] flex items-center justify-center font-bold text-2xl bg-[#020617] italic">G</div>
+            <div>
+                <h1 class="text-xs font-black tracking-[0.5em] uppercase text-[#00f2ff] shadow-blue-500/50">GUSDEV</h1>
+                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Desarrollador Full Stack</p>
+            </div>
+        </div>
+        <nav class="hidden md:flex gap-12 text-[10px] font-bold tracking-[0.4em] text-slate-400 uppercase">
+            <a href="projects.html" class="hover:text-[#00f2ff] transition-all">/PROJECTS</a>
+            <a href="bio.html" class="hover:text-[#00f2ff] transition-all">/BIOGRAPHY</a>
+            <a href="contact.html" class="hover:text-[#00f2ff] transition-all">/CONTACT</a>
+        </nav>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start flex-1">
+        
+        <div class="lg:col-span-7 space-y-12">
+            <div class="space-y-6">
+                <span class="text-[#bc13fe] font-bold text-sm tracking-widest">// FULL_STACK_DEPLOYMENT_ACTIVE</span>
+                <h2 class="text-6xl md:text-8xl font-black italic tracking-tighter leading-[0.85] uppercase">
+                    CREANDO <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#00f2ff] to-[#bc13fe]">SISTEMAS_DE</span> NIVEL_PRO
+                </h2>
+                <p class="text-slate-400 max-w-xl text-sm md:text-base border-l-2 border-white/10 pl-6 italic font-light leading-relaxed">
+                    Especialista en el desarrollo de ecosistemas completos: desde la arquitectura de servidores Linux hasta aplicaciones Android de alto rendimiento.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="lang-node p-4">
+                    <span class="block text-[10px] text-slate-500 font-bold mb-1 uppercase tracking-tighter">Backend_Core</span>
+                    <span class="text-white font-black italic text-lg tracking-widest">PYTHON</span>
+                </div>
+                <div class="lang-node p-4 border-l-[#bc13fe]">
+                    <span class="block text-[10px] text-slate-500 font-bold mb-1 uppercase tracking-tighter">Performance</span>
+                    <span class="text-white font-black italic text-lg tracking-widest">GOLANG</span>
+                </div>
+                <div class="lang-node p-4">
+                    <span class="block text-[10px] text-slate-500 font-bold mb-1 uppercase tracking-tighter">Mobile_Ops</span>
+                    <span class="text-white font-black italic text-lg tracking-widest">KOTLIN</span>
+                </div>
+                <div class="lang-node p-4 border-l-[#bc13fe]">
+                    <span class="block text-[10px] text-slate-500 font-bold mb-1 uppercase tracking-tighter">Kernel_Env</span>
+                    <span class="text-white font-black italic text-lg tracking-widest">LINUX</span>
+                </div>
+                <div class="lang-node p-4">
+                    <span class="block text-[10px] text-slate-500 font-bold mb-1 uppercase tracking-tighter">Mobile_Ops</span>
+                    <span class="text-white font-black italic text-lg tracking-widest">JAVA</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-5">
+            <div class="glass-card rounded-2xl overflow-hidden">
+                <div class="bg-white/5 px-5 py-3 border-b border-white/10 flex justify-between items-center">
+                    <span class="text-[9px] font-black text-[#00f2ff] uppercase tracking-[0.2em]">Live_Status: /var/log/sys.log</span>
+                    <div class="flex gap-1.5">
+                        <div class="w-2 h-2 rounded-full bg-red-500 status-dot"></div>
+                        <div class="w-2 h-2 rounded-full bg-slate-700"></div>
+                    </div>
+                </div>
+                <div class="p-6 h-64 font-mono text-[11px] leading-relaxed bg-black/40 overflow-hidden">
+                    <p class="text-slate-600 mb-2">[2026.03.19_19:14] Initializing Full_Stack_Engine...</p>
+                    <p class="text-[#00f2ff]">> Load_Module: python_automation_v4</p>
+                    <p class="text-[#bc13fe]">> Load_Module: go_backend_wails</p>
+                    <p class="text-slate-400">> Checking dependencies in Debian/Arch... OK</p>
+                    <p class="text-green-500">> System Ready. User: GusDev authenticated.</p>
+                    <p class="mt-10 text-slate-700 italic">// Waiting for input_</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 border-t border-white/5 pt-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10 text-[10px] font-bold tracking-widest uppercase text-slate-500">
+            <div class="space-y-2">
+                <span class="text-white block border-b border-white/10 pb-2 mb-4">Location_Data</span>
+                <p>Leon, Guanajuato, MX</p>
+                <p class="text-[#00f2ff]">Timezone: GMT-6</p>
+            </div>
+            <div class="space-y-2">
+                <span class="text-white block border-b border-white/10 pb-2 mb-4">System_Specs</span>
+                <p>Role: Senior Full Stack</p>
+                <p class="text-[#bc13fe]">Focus: Automation / Security</p>
+            </div>
+            <div class="space-y-2">
+                <span class="text-white block border-b border-white/10 pb-2 mb-4">Network_Links</span>
+                <div class="flex gap-6">
+                    <a href="https://github.com/gusitodev06" class="hover:text-white transition-colors tracking-[0.5em]">GITHUB</a>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-between items-center text-[9px] text-slate-700 border-t border-white/5 pt-6">
+            <span>© 2026 GUSDEV // ALL_SYSTEMS_OPERATIONAL</span>
+            <span class="font-mono tracking-tighter">BUILD_ID: 0x882A_FULLSTACK</span>
+        </div>
+    </footer>
+
+</body>
+</html>
